@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexusUni — Academic & Department Management Portal</title>
+  <style>
+    /* ==========================================================================
+       1. DESIGN TOKENS & THEME VARIABLES (DARK DEFAULT + LIGHT MODE)
+       ========================================================================== */
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #161f32;
+      --bg-input: #1e293b;
+      --bg-hover: #243147;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #263349;
+      --accent-primary: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-soft: rgba(59, 130, 246, 0.14);
+      --hod-color: #a855f7;
+      --hod-soft: rgba(168, 85, 247, 0.14);
+      --prof-color: #06b6d4;
+      --prof-soft: rgba(6, 182, 212, 0.14);
+      --student-color: #10b981;
+      --student-soft: rgba(16, 185, 129, 0.14);
+      --success: #10b981;
+      --success-soft: rgba(16, 185, 129, 0.15);
+      --warning: #f59e0b;
+      --warning-soft: rgba(245, 158, 11, 0.15);
+      --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.15);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.45);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f1f5f9;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-input: #f8fafc;
+      --bg-hover: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --accent-primary: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-soft: rgba(37, 99, 235, 0.1);
+      --hod-color: #9333ea;
+      --hod-soft: rgba(147, 51, 234, 0.1);
+      --prof-color: #0891b2;
+      --prof-soft: rgba(8, 145, 178, 0.1);
+      --student-color: #059669;
+      --student-soft: rgba(5, 150, 105, 0.1);
+      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 10px 25px rgba(15, 23, 42, 0.1);
+    }
+
+    /* ==========================================================================
+       2. RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.55;
+      min-height: 100vh;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      overflow-x: hidden;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    /* ==========================================================================
+       3. UTILITY & LAYOUT COMPONENTS
+       ========================================================================== */
+    .hidden { display: none !important; }
+
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.25rem;
+    }
+
+    /* Top Header Navigation */
+    .topbar {
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent-primary), #6366f1);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    }
+
+    .brand-title h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-title span {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      display: block;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.6rem 1.05rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-primary {
+      background-color: var(--accent-primary);
+      color: #ffffff;
+    }
+    .btn-primary:hover { background-color: var(--accent-hover); }
+
+    .btn-secondary {
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+    .btn-secondary:hover { background-color: var(--bg-hover); }
+
+    .btn-danger {
+      background-color: var(--danger-soft);
+      color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .btn-danger:hover {
+      background-color: var(--danger);
+      color: #ffffff;
+    }
+
+    .btn-success {
+      background-color: var(--success-soft);
+      color: var(--success);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .btn-success:hover {
+      background-color: var(--success);
+      color: #ffffff;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.82rem;
+    }
+
+    /* Cards & Grids */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.35rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.15rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 960px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 680px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .topbar { padding: 0.75rem 1rem; }
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    textarea.form-control {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.22rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-hod { background: var(--hod-soft); color: var(--hod-color); }
+    .badge-prof { background: var(--prof-soft); color: var(--prof-color); }
+    .badge-student { background: var(--student-soft); color: var(--student-color); }
+    .badge-success { background: var(--success-soft); color: var(--success); }
+    .badge-warning { background: var(--warning-soft); color: var(--warning); }
+    .badge-danger { background: var(--danger-soft); color: var(--danger); }
+
+    /* Tables */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: var(--bg-input);
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background-color: rgba(148, 163, 184, 0.04); }
+
+    /* ==========================================================================
+       4. LOGIN SCREEN STYLES
+       ========================================================================== */
+    .login-wrapper {
+      min-height: calc(100vh - 72px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .role-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      background-color: var(--bg-input);
+      padding: 0.35rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .role-tab {
+      padding: 0.6rem 0.5rem;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .role-tab.active[data-role="hod"] {
+      background-color: var(--hod-color);
+      color: #fff;
+    }
+    .role-tab.active[data-role="professor"] {
+      background-color: var(--prof-color);
+      color: #fff;
+    }
+    .role-tab.active[data-role="student"] {
+      background-color: var(--student-color);
+      color: #fff;
+    }
+
+    .demo-box {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .demo-box-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .demo-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .demo-pill {
+      flex: 1 1 auto;
+      font-size: 0.78rem;
+      padding: 0.45rem 0.65rem;
+      border-radius: 6px;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .demo-pill:hover {
+      border-color: var(--accent-primary);
+      background-color: var(--accent-soft);
+    }
+
+    /* ==========================================================================
+       5. DASHBOARD TABS & STATS
+       ========================================================================== */
+    .stat-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-info span {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .stat-info strong {
+      font-size: 1.65rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-top: 0.2rem;
+      display: block;
+    }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.35rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .nav-tab {
+      padding: 0.65rem 1.1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .nav-tab:hover {
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+    }
+
+    .nav-tab.active {
+      background-color: var(--accent-soft);
+      color: var(--accent-primary);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    /* Notice / Instruction Cards */
+    .notice-item {
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-input);
+      border-left: 4px solid var(--hod-color);
+      margin-bottom: 0.85rem;
+    }
+
+    .notice-item:last-child { margin-bottom: 0; }
+
+    .notice-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    /* Student Profile Avatar */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .avatar-box {
+      position: relative;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--student-color);
+      background-color: var(--bg-input);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--student-color);
+      flex-shrink: 0;
+    }
+
+    .avatar-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ==========================================================================
+       6. CUSTOM MODAL & TOAST NOTIFICATIONS (NO ALERT / CONFIRM)
+       ========================================================================== */
+    .toast-container {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      max-width: 360px;
+    }
+
+    .toast {
+      padding: 0.85rem 1.1rem;
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-primary);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-md);
+      font-size: 0.88rem;
+      font-weight: 600;
+      animation: slideIn 0.25s ease forwards;
+    }
+
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.warning { border-left-color: var(--warning); }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 100;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.65rem;
+      margin-top: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP BAR HEADER (ALWAYS VISIBLE)
+       ======================================================================== -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">NU</div>
+      <div class="brand-title">
+        <h1>NexusUni Academic Portal</h1>
+        <span id="headerSubtitle">Department of Computer Engineering</span>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <span id="activeUserBadge" class="badge hidden"></span>
+      <button type="button" id="themeToggleBtn" class="btn btn-secondary btn-sm" title="Switch Light/Dark Theme">
+        <span id="themeIcon">☀️</span> <span id="themeText">Light Mode</span>
+      </button>
+      <button type="button" id="logoutBtn" class="btn btn-danger btn-sm hidden">
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       1. AUTHENTICATION / LOGIN VIEW (3 ROLES)
+       ======================================================================== -->
+  <main id="loginView" class="login-wrapper">
+    <div class="login-card">
+      <div style="text-align: center; margin-bottom: 1.35rem;">
+        <h2 style="font-size: 1.45rem; font-weight: 800;">Portal Sign In</h2>
+        <p style="color: var(--text-secondary); font-size: 0.88rem; margin-top: 0.25rem;">
+          Select your institutional role to access your dashboard
+        </p>
+      </div>
+
+      <!-- 3-Role Switcher Tabs -->
+      <div class="role-selector" role="tablist">
+        <button type="button" class="role-tab active" data-role="hod">HOD Login</button>
+        <button type="button" class="role-tab" data-role="professor">Professor</button>
+        <button type="button" class="role-tab" data-role="student">Student</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label id="loginIdLabel" class="form-label" for="loginIdentifier">HOD Official Email</label>
+          <input
+            type="email"
+            id="loginIdentifier"
+            class="form-control"
+            placeholder="hod.ce@nexusuni.edu"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Password</label>
+          <input
+            type="password"
+            id="loginPassword"
+            class="form-control"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+          Sign In as HOD
+        </button>
+      </form>
+
+      <!-- Quick Demo Autofill Section -->
+      <div class="demo-box">
+        <div class="demo-box-title">
+          <span>Quick Demo Autofill</span>
+          <button type="button" id="resetDemoBtn" class="btn btn-secondary btn-sm" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">
+            Reset Demo Data
+          </button>
+        </div>
+        <div class="demo-pills">
+          <button type="button" class="demo-pill" onclick="fillDemoLogin('hod')">
+            <strong>HOD</strong><br/><span style="color: var(--text-secondary);">Dr. R. K. Sharma</span>
+          </button>
+          <button type="button" class="demo-pill" onclick="fillDemoLogin('professor')">
+            <strong>Professor</strong><br/><span style="color: var(--text-secondary);">Prof. Ananya Verma</span>
+          </button>
+          <button type="button" class="demo-pill" onclick="fillDemoLogin('student')">
+            <strong>Student</strong><br/><span style="color: var(--text-secondary);">240140107001</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       2. HOD DASHBOARD VIEW (FULL SYSTEM & FACULTY CONTROL)
+       ======================================================================== -->
+  <section id="hodDashboard" class="container hidden">
+    <!-- Top KPIs -->
+    <div class="grid-4" style="margin-bottom: 1.5rem;" id="hodStatsGrid"></div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs" id="hodNavTabs">
+      <button type="button" class="nav-tab active" data-tab="hod-instructions">Instructions & Notices</button>
+      <button type="button" class="nav-tab" data-tab="hod-professors">Manage Professors</button>
+      <button type="button" class="nav-tab" data-tab="hod-students">All Students & Results</button>
+      <button type="button" class="nav-tab" data-tab="hod-tickets">Student Requests & Feedback</button>
+    </div>
+
+    <!-- Tab 1: Instructions -->
+    <div id="hod-instructions" class="hod-tab-panel">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Broadcast Official Instruction</h3>
+          </div>
+          <form id="hodInstructionForm">
+            <div class="form-group">
+              <label class="form-label">Instruction Title</label>
+              <input type="text" id="instTitle" class="form-control" placeholder="e.g., Mid-Semester Exam Schedule & Guidelines" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Target Audience</label>
+              <select id="instAudience" class="form-control">
+                <option value="All (Professors & Students)">All (Professors & Students)</option>
+                <option value="Professors Only">Professors Only</option>
+                <option value="Students Only">Students Only</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Detailed Directive</label>
+              <textarea id="instBody" class="form-control" placeholder="Write clear academic instructions..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Publish Instruction</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Active Department Instructions</h3>
+          </div>
+          <div id="hodInstructionsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Manage Professors -->
+    <div id="hod-professors" class="hod-tab-panel hidden">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Add New Professor</h3>
+          </div>
+          <form id="addProfForm">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" id="profName" class="form-control" placeholder="e.g., Prof. Vikram Patel" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Official Email</label>
+              <input type="email" id="profEmail" class="form-control" placeholder="vikram.patel@nexusuni.edu" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Assigned Subject / Specialization</label>
+              <input type="text" id="profSubject" class="form-control" placeholder="e.g., Operating Systems" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Login Password</label>
+              <input type="text" id="profPassword" class="form-control" placeholder="Create password" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Add Professor Account</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Faculty Directory</h3>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Subject</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="hodProfTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: All Students & Academic Results -->
+    <div id="hod-students" class="hod-tab-panel hidden">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Department Students & Overall Performance</h3>
+          <button type="button" class="btn btn-danger btn-sm" onclick="confirmResetApp()">Reset Entire Portal Data</button>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Enrollment No.</th>
+                <th>Student Name</th>
+                <th>Sem</th>
+                <th>Mid Avg (%)</th>
+                <th>Re-Mid Avg (%)</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="hodStudentTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Student Requests & Feedback -->
+    <div id="hod-tickets" class="hod-tab-panel hidden">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Student Requests</h3>
+          </div>
+          <div id="hodRequestsList"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Student Feedback Logs</h3>
+          </div>
+          <div id="hodFeedbackList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       3. PROFESSOR DASHBOARD VIEW (MARKS, MEMBERS, STUDENT HELP)
+       ======================================================================== -->
+  <section id="professorDashboard" class="container hidden">
+    <div class="grid-4" style="margin-bottom: 1.5rem;" id="profStatsGrid"></div>
+
+    <div class="nav-tabs" id="profNavTabs">
+      <button type="button" class="nav-tab active" data-tab="prof-marks">Mid & Re-Mid Marks</button>
+      <button type="button" class="nav-tab" data-tab="prof-members">Manage Members</button>
+      <button type="button" class="nav-tab" data-tab="prof-helpdesk">Student Helpdesk & Feedback</button>
+      <button type="button" class="nav-tab" data-tab="prof-notices">HOD Instructions</button>
+    </div>
+
+    <!-- Tab 1: Add / Edit Mid & Re-Mid Marks -->
+    <div id="prof-marks" class="prof-tab-panel">
+      <div class="card" style="margin-bottom: 1.25rem;">
+        <div class="card-header">
+          <h3 class="card-title">Add / Update Student Mid & Re-Mid Marks (Out of 30)</h3>
+        </div>
+        <form id="profMarkForm" class="grid-4" style="align-items: end;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Select Student</label>
+            <select id="markStudentSelect" class="form-control" required></select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Subject</label>
+            <select id="markSubjectSelect" class="form-control" required>
+              <option value="Data Structures">Data Structures</option>
+              <option value="Database Systems">Database Systems</option>
+              <option value="Computer Networks">Computer Networks</option>
+              <option value="Operating Systems">Operating Systems</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Mid-Sem Marks (0-30)</label>
+            <input type="number" id="midScoreInput" class="form-control" min="0" max="30" placeholder="e.g., 24" required />
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Re-Mid Marks (0-30 or Blank)</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="number" id="remidScoreInput" class="form-control" min="0" max="30" placeholder="Optional" />
+              <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Student Examination Ledger</h3>
+          <select id="profFilterStudent" class="form-control" style="max-width: 260px;">
+            <option value="ALL">All Students</option>
+          </select>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Enrollment No.</th>
+                <th>Student Name</th>
+                <th>Subject</th>
+                <th>Mid Marks (30)</th>
+                <th>Re-Mid Marks (30)</th>
+                <th>Effective Score</th>
+                <th>Result</th>
+                <th>Quick Edit</th>
+              </tr>
+            </thead>
+            <tbody id="profMarksTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Control App Members (Add / Remove Students) -->
+    <div id="prof-members" class="prof-tab-panel hidden">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Enroll New Student</h3>
+          </div>
+          <form id="profAddStudentForm">
+            <div class="form-group">
+              <label class="form-label">Enrollment Number</label>
+              <input type="text" id="newStuEnroll" class="form-control" placeholder="e.g., 240140107006" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Student Full Name</label>
+              <input type="text" id="newStuName" class="form-control" placeholder="e.g., Aarav Mehta" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Semester</label>
+              <select id="newStuSem" class="form-control">
+                <option value="Semester 3">Semester 3</option>
+                <option value="Semester 4" selected>Semester 4</option>
+                <option value="Semester 5">Semester 5</option>
+                <option value="Semester 6">Semester 6</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Student Login Password</label>
+              <input type="text" id="newStuPass" class="form-control" placeholder="Set initial password" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Add Student Member</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Enrolled Students List</h3>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Enrollment No.</th>
+                  <th>Name</th>
+                  <th>Semester</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="profStudentsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Help of Student (Requests & Feedback) -->
+    <div id="prof-helpdesk" class="prof-tab-panel hidden">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Student Help & Re-Mid Requests</h3>
+          </div>
+          <div id="profRequestsList"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Student Course Feedback</h3>
+          </div>
+          <div id="profFeedbackList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: HOD Instructions -->
+    <div id="prof-notices" class="prof-tab-panel hidden">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Instructions from Head of Department (HOD)</h3>
+        </div>
+        <div id="profInstructionsList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       4. STUDENT DASHBOARD VIEW (STRICTLY ISOLATED, READ-ONLY MARKS)
+       ======================================================================== -->
+  <section id="studentDashboard" class="container hidden">
+    <!-- Student Profile Card -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="profile-header">
+        <div class="avatar-box" id="studentAvatarContainer">
+          <span id="studentAvatarInitials">ST</span>
+        </div>
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+            <h2 id="studentProfileName" style="font-size: 1.35rem; font-weight: 800;">Student Name</h2>
+            <span class="badge badge-student" id="studentProfileSem">Semester 4</span>
+          </div>
+          <p style="color: var(--text-secondary); margin-top: 0.2rem; font-size: 0.92rem;">
+            Enrollment Number: <strong id="studentProfileEnroll" style="color: var(--text-primary);">240140107001</strong>
+          </p>
+          <div style="margin-top: 0.75rem; display: flex; gap: 0.65rem; flex-wrap: wrap;">
+            <label for="profilePicUpload" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+              Change Profile Picture
+            </label>
+            <input type="file" id="profilePicUpload" accept="image/*" class="hidden" />
+            <button type="button" id="removePicBtn" class="btn btn-danger btn-sm hidden">Remove Photo</button>
+          </div>
+        </div>
+        <div id="studentSummaryBox" style="text-align: right;"></div>
+      </div>
+    </div>
+
+    <!-- Student Navigation Tabs (No Faculty/HOD directory tabs allowed) -->
+    <div class="nav-tabs" id="studentNavTabs">
+      <button type="button" class="nav-tab active" data-tab="stu-marks">My Mid & Re-Mid Marks</button>
+      <button type="button" class="nav-tab" data-tab="stu-requests">Make a Request</button>
+      <button type="button" class="nav-tab" data-tab="stu-feedback">Give Feedback</button>
+      <button type="button" class="nav-tab" data-tab="stu-notices">Department Notices</button>
+    </div>
+
+    <!-- Tab 1: Read-Only Marks -->
+    <div id="stu-marks" class="stu-tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">My Mid-Semester & Re-Mid Examination Marks</h3>
+          <span class="badge badge-warning">Read-Only Official Record</span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Mid-Sem Marks (Max 30)</th>
+                <th>Re-Mid Marks (Max 30)</th>
+                <th>Final Considered (Max 30)</th>
+                <th>Result Status</th>
+              </tr>
+            </thead>
+            <tbody id="studentMarksTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Make a Request -->
+    <div id="stu-requests" class="stu-tab-panel hidden">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Submit Academic / Re-Mid Request</h3>
+          </div>
+          <form id="studentRequestForm">
+            <div class="form-group">
+              <label class="form-label">Request Category</label>
+              <select id="stuReqType" class="form-control" required>
+                <option value="Re-Mid Exam Application">Re-Mid Exam Application</option>
+                <option value="Marks Re-Evaluation / Query">Marks Re-Evaluation / Query</option>
+                <option value="Medical / Academic Leave">Medical / Academic Leave</option>
+                <option value="Extra Doubt Session">Extra Doubt Session</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject (If Applicable)</label>
+              <select id="stuReqSubject" class="form-control">
+                <option value="Data Structures">Data Structures</option>
+                <option value="Database Systems">Database Systems</option>
+                <option value="Computer Networks">Computer Networks</option>
+                <option value="Operating Systems">Operating Systems</option>
+                <option value="General">General</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reason & Details</label>
+              <textarea id="stuReqMessage" class="form-control" placeholder="Describe your request clearly..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">My Request History & Status</h3>
+          </div>
+          <div id="studentRequestsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Give Feedback -->
+    <div id="stu-feedback" class="stu-tab-panel hidden">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Submit Academic Feedback</h3>
+          </div>
+          <form id="studentFeedbackForm">
+            <div class="form-group">
+              <label class="form-label">Course / Area</label>
+              <select id="stuFbSubject" class="form-control">
+                <option value="Data Structures">Data Structures</option>
+                <option value="Database Systems">Database Systems</option>
+                <option value="Computer Networks">Computer Networks</option>
+                <option value="Operating Systems">Operating Systems</option>
+                <option value="Lab & Infrastructure">Lab & Infrastructure</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Overall Experience Rating</label>
+              <select id="stuFbRating" class="form-control">
+                <option value="5 - Excellent">5 - Excellent</option>
+                <option value="4 - Very Good">4 - Very Good</option>
+                <option value="3 - Satisfactory">3 - Satisfactory</option>
+                <option value="2 - Needs Improvement">2 - Needs Improvement</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Your Comments</label>
+              <textarea id="stuFbComment" class="form-control" placeholder="Share constructive feedback..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Feedback</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">My Submitted Feedback</h3>
+          </div>
+          <div id="studentFeedbackList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Department Notices -->
+    <div id="stu-notices" class="stu-tab-panel hidden">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Official Department Notices</h3>
+        </div>
+        <div id="studentNoticesList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       5. CUSTOM CONFIRMATION & REPLY MODAL (NO NATIVE ALERT/CONFIRM)
+       ======================================================================== -->
+  <div id="customModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <h3 id="modalTitle" style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">Confirm Action</h3>
+      <p id="modalDescription" style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 0.85rem;"></p>
+      <div id="modalInputContainer" class="form-group hidden">
+        <label id="modalInputLabel" class="form-label">Response</label>
+        <textarea id="modalTextInput" class="form-control" placeholder="Write your response..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="modalCancelBtn" class="btn btn-secondary btn-sm">Cancel</button>
+        <button type="button" id="modalConfirmBtn" class="btn btn-primary btn-sm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- ========================================================================
+       6. APPLICATION LOGIC & STATE MANAGEMENT (VANILLA JS + LOCALSTORAGE)
+       ======================================================================== -->
+  <script>
+    const STORAGE_KEY = "nexusuni_academic_portal_v1";
+    const THEME_KEY = "nexusuni_theme_v1";
+
+    /* ------------------------------------------------------------------------
+       PRE-POPULATED REALISTIC DEMO DATA
+       ------------------------------------------------------------------------ */
+    function getDefaultData() {
+      return {
+        hod: {
+          id: "HOD-01",
+          name: "Dr. R. K. Sharma",
+          email: "hod.ce@nexusuni.edu",
+          password: "hod123",
+          department: "Computer Engineering"
+        },
+        professors: [
+          {
+            id: "PROF-01",
+            name: "Prof. Ananya Verma",
+            email: "ananya.verma@nexusuni.edu",
+            subject: "Data Structures",
+            password: "prof123"
+          },
+          {
+            id: "PROF-02",
+            name: "Prof. Rajesh Nair",
+            email: "rajesh.nair@nexusuni.edu",
+            subject: "Database Systems",
+            password: "prof123"
+          },
+          {
+            id: "PROF-03",
+            name: "Prof. Meera Joshi",
+            email: "meera.joshi@nexusuni.edu",
+            subject: "Computer Networks",
+            password: "prof123"
+          }
+        ],
+        students: [
+          {
+            enrollment: "240140107001",
+            name: "Rohan Desai",
+            semester: "Semester 4",
+            password: "stu123",
+            avatar: ""
+          },
+          {
+            enrollment: "240140107002",
+            name: "Priya Patel",
+            semester: "Semester 4",
+            password: "stu123",
+            avatar: ""
+          },
+          {
+            enrollment: "240140107003",
+            name: "Kabir Shah",
+            semester: "Semester 4",
+            password: "stu123",
+            avatar: ""
+          },
+          {
+            enrollment: "240140107004",
+            name: "Sneha Kulkarni",
+            semester: "Semester 4",
+            password: "stu123",
+            avatar: ""
+          },
+          {
+            enrollment: "240140107005",
+            name: "Aditya Rao",
+            semester: "Semester 4",
+            password: "stu123",
+            avatar: ""
+          }
+        ],
+        marks: [
+          { id: "M1", enrollment: "240140107001", subject: "Data Structures", mid: 25, remid: null },
+          { id: "M2", enrollment: "240140107001", subject: "Database Systems", mid: 10, remid: 21 },
+          { id: "M3", enrollment: "240140107001", subject: "Computer Networks", mid: 22, remid: null },
+          { id: "M4", enrollment: "240140107001", subject: "Operating Systems", mid: 27, remid: null },
+
+          { id: "M5", enrollment: "240140107002", subject: "Data Structures", mid: 28, remid: null },
+          { id: "M6", enrollment: "240140107002", subject: "Database Systems", mid: 26, remid: null },
+          { id: "M7", enrollment: "240140107002", subject: "Computer Networks", mid: 29, remid: null },
+          { id: "M8", enrollment: "240140107002", subject: "Operating Systems", mid: 24, remid: null },
+
+          { id: "M9", enrollment: "240140107003", subject: "Data Structures", mid: 9, remid: 18 },
+          { id: "M10", enrollment: "240140107003", subject: "Database Systems", mid: 11, remid: null },
+          { id: "M11", enrollment: "240140107003", subject: "Computer Networks", mid: 16, remid: null },
+
+          { id: "M12", enrollment: "240140107004", subject: "Data Structures", mid: 21, remid: null },
+          { id: "M13", enrollment: "240140107004", subject: "Database Systems", mid: 19, remid: null },
+
+          { id: "M14", enrollment: "240140107005", subject: "Data Structures", mid: 8, remid: null },
+          { id: "M15", enrollment: "240140107005", subject: "Operating Systems", mid: 20, remid: null }
+        ],
+        instructions: [
+          {
+            id: "INST-101",
+            title: "Re-Mid Examination Registration & Eligibility",
+            audience: "All (Professors & Students)",
+            body: "Students scoring below 12 out of 30 in Mid-Semester exams are eligible for the Re-Mid examination. Faculty members must finalize Re-Mid marks before the end of this month.",
+            date: "Nov 22, 2026"
+          },
+          {
+            id: "INST-102",
+            title: "Continuous Lab Evaluation Audit",
+            audience: "Professors Only",
+            body: "All subject professors are requested to verify student attendance and update mid-semester assessment records on the portal.",
+            date: "Nov 20, 2026"
+          }
+        ],
+        requests: [
+          {
+            id: "REQ-201",
+            enrollment: "240140107003",
+            studentName: "Kabir Shah",
+            type: "Re-Mid Exam Application",
+            subject: "Database Systems",
+            message: "I scored 11/30 in Database Systems Mid-Sem due to viral fever. Requesting permission to appear for Re-Mid.",
+            status: "Pending",
+            reply: "",
+            date: "Nov 24, 2026"
+          },
+          {
+            id: "REQ-202",
+            enrollment: "240140107001",
+            studentName: "Rohan Desai",
+            type: "Marks Re-Evaluation / Query",
+            subject: "Database Systems",
+            message: "Thank you for updating my Re-Mid score to 21/30.",
+            status: "Resolved",
+            reply: "Verified and updated in the examination ledger.",
+            date: "Nov 21, 2026"
+          }
+        ],
+        feedbacks: [
+          {
+            id: "FB-301",
+            enrollment: "240140107002",
+            studentName: "Priya Patel",
+            subject: "Data Structures",
+            rating: "5 - Excellent",
+            comment: "The practical tree and graph visualization sessions made complex topics very intuitive.",
+            date: "Nov 23, 2026"
+          }
+        ]
+      };
+    }
+
+    /* ------------------------------------------------------------------------
+       STATE INITIALIZATION & PERSISTENCE
+       ------------------------------------------------------------------------ */
+    let appState = loadState();
+    let currentSession = null; // { role: 'hod'|'professor'|'student', user: Object }
+    let selectedLoginRole = "hod";
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const initial = getDefaultData();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+          return initial;
+        }
+        return JSON.parse(raw);
+      } catch (err) {
+        return getDefaultData();
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (err) {
+        showToast("Storage quota exceeded! Try a smaller profile image.", "error");
+      }
+    }
+
+    /* ------------------------------------------------------------------------
+       THEME MANAGEMENT (DARK MODE DEFAULT / LIGHT MODE TOGGLE)
+       ------------------------------------------------------------------------ */
+    function initTheme() {
+      const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
+      applyTheme(savedTheme);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem(THEME_KEY, theme);
+      const icon = document.getElementById("themeIcon");
+      const text = document.getElementById("themeText");
+      if (theme === "dark") {
+        icon.textContent = "☀️";
+        text.textContent = "Light Mode";
+      } else {
+        icon.textContent = "🌙";
+        text.textContent = "Dark Mode";
+      }
+    }
+
+    document.getElementById("themeToggleBtn").addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      applyTheme(current === "dark" ? "light" : "dark");
+    });
+
+    /* ------------------------------------------------------------------------
+       TOAST & MODAL HELPERS
+       ------------------------------------------------------------------------ */
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 250);
+      }, 3200);
+    }
+
+    function openModal({ title, description, showInput = false, inputLabel = "", initialValue = "", confirmText = "Confirm", isDanger = false, onConfirm }) {
+      const modal = document.getElementById("customModal");
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalDescription").textContent = description;
+
+      const inputContainer = document.getElementById("modalInputContainer");
+      const textInput = document.getElementById("modalTextInput");
+      if (showInput) {
+        inputContainer.classList.remove("hidden");
+        document.getElementById("modalInputLabel").textContent = inputLabel;
+        textInput.value = initialValue;
+      } else {
+        inputContainer.classList.add("hidden");
+      }
+
+      const confirmBtn = document.getElementById("modalConfirmBtn");
+      confirmBtn.textContent = confirmText;
+      confirmBtn.className = isDanger ? "btn btn-danger btn-sm" : "btn btn-primary btn-sm";
+
+      modal.classList.remove("hidden");
+
+      const close = () => modal.classList.add("hidden");
+      document.getElementById("modalCancelBtn").onclick = close;
+      confirmBtn.onclick = () => {
+        const val = textInput.value.trim();
+        close();
+        onConfirm(val);
+      };
+    }
+
+    /* ------------------------------------------------------------------------
+       LOGIN LOGIC & ROLE SWITCHER
+       ------------------------------------------------------------------------ */
+    document.querySelectorAll(".role-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".role-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        selectedLoginRole = tab.dataset.role;
+
+        const idLabel = document.getElementById("loginIdLabel");
+        const idInput = document.getElementById("loginIdentifier");
+        const submitBtn = document.getElementById("loginSubmitBtn");
+
+        idInput.value = "";
+        document.getElementById("loginPassword").value = "";
+
+        if (selectedLoginRole === "hod") {
+          idLabel.textContent = "HOD Official Email";
+          idInput.type = "email";
+          idInput.placeholder = "hod.ce@nexusuni.edu";
+          submitBtn.textContent = "Sign In as HOD";
+        } else if (selectedLoginRole === "professor") {
+          idLabel.textContent = "Professor Official Email";
+          idInput.type = "email";
+          idInput.placeholder = "ananya.verma@nexusuni.edu";
+          submitBtn.textContent = "Sign In as Professor";
+        } else {
+          idLabel.textContent = "Student Enrollment Number";
+          idInput.type = "text";
+          idInput.placeholder = "e.g., 240140107001";
+          submitBtn.textContent = "Sign In as Student";
+        }
+      });
+    });
+
+    window.fillDemoLogin = function (role) {
+      document.querySelector(`.role-tab[data-role="${role}"]`).click();
+      if (role === "hod") {
+        document.getElementById("loginIdentifier").value = appState.hod.email;
+        document.getElementById("loginPassword").value = appState.hod.password;
+      } else if (role === "professor") {
+        const p = appState.professors[0];
+        if (p) {
+          document.getElementById("loginIdentifier").value = p.email;
+          document.getElementById("loginPassword").value = p.password;
+        }
+      } else if (role === "student") {
+        const s = appState.students[0];
+        if (s) {
+          document.getElementById("loginIdentifier").value = s.enrollment;
+          document.getElementById("loginPassword").value = s.password;
+        }
+      }
+      showToast(`Demo ${role.toUpperCase()} credentials filled`, "info");
+    };
+
+    document.getElementById("resetDemoBtn").addEventListener("click", confirmResetApp);
+
+    function confirmResetApp() {
+      openModal({
+        title: "Reset Portal to Default Demo Data?",
+        description: "All added professors, students, custom marks, notices, and profile pictures will be restored to initial demo values.",
+        confirmText: "Reset Data",
+        isDanger: true,
+        onConfirm: () => {
+          appState = getDefaultData();
+          saveState();
+          showToast("System reset to fresh demo data.", "success");
+          if (currentSession) {
+            logoutUser();
+          }
+        }
+      });
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const identifier = document.getElementById("loginIdentifier").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      if (selectedLoginRole === "hod") {
+        if (identifier.toLowerCase() === appState.hod.email.toLowerCase() && password === appState.hod.password) {
+          currentSession = { role: "hod", user: appState.hod };
+          enterDashboard();
+        } else {
+          showToast("Invalid HOD email or password.", "error");
+        }
+      } else if (selectedLoginRole === "professor") {
+        const prof = appState.professors.find(
+          p => p.email.toLowerCase() === identifier.toLowerCase() && p.password === password
+        );
+        if (prof) {
+          currentSession = { role: "professor", user: prof };
+          enterDashboard();
+        } else {
+          showToast("Invalid Professor email or password.", "error");
+        }
+      } else if (selectedLoginRole === "student") {
+        const stu = appState.students.find(
+          s => s.enrollment.toLowerCase() === identifier.toLowerCase() && s.password === password
+        );
+        if (stu) {
+          currentSession = { role: "student", user: stu };
+          enterDashboard();
+        } else {
+          showToast("Invalid Enrollment Number or password.", "error");
+        }
+      }
+    });
+
+    function enterDashboard() {
+      document.getElementById("loginView").classList.add("hidden");
+      document.getElementById("logoutBtn").classList.remove("hidden");
+
+      const badge = document.getElementById("activeUserBadge");
+      badge.classList.remove("hidden", "badge-hod", "badge-prof", "badge-student");
+
+      document.getElementById("hodDashboard").classList.add("hidden");
+      document.getElementById("professorDashboard").classList.add("hidden");
+      document.getElementById("studentDashboard").classList.add("hidden");
+
+      if (currentSession.role === "hod") {
+        badge.classList.add("badge-hod");
+        badge.textContent = `HOD: ${currentSession.user.name}`;
+        document.getElementById("hodDashboard").classList.remove("hidden");
+        renderHodDashboard();
+      } else if (currentSession.role === "professor") {
+        badge.classList.add("badge-prof");
+        badge.textContent = `Faculty: ${currentSession.user.name}`;
+        document.getElementById("professorDashboard").classList.remove("hidden");
+        renderProfessorDashboard();
+      } else if (currentSession.role === "student") {
+        badge.classList.add("badge-student");
+        badge.textContent = `Student: ${currentSession.user.enrollment}`;
+        document.getElementById("studentDashboard").classList.remove("hidden");
+        renderStudentDashboard();
+      }
+
+      showToast(`Welcome back, ${currentSession.user.name}!`, "success");
+    }
+
+    function logoutUser() {
+      currentSession = null;
+      document.getElementById("loginView").classList.remove("hidden");
+      document.getElementById("logoutBtn").classList.add("hidden");
+      document.getElementById("activeUserBadge").classList.add("hidden");
+      document.getElementById("hodDashboard").classList.add("hidden");
+      document.getElementById("professorDashboard").classList.add("hidden");
+      document.getElementById("studentDashboard").classList.add("hidden");
+      document.getElementById("loginPassword").value = "";
+      showToast("Signed out securely.", "info");
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", logoutUser);
+
+    /* ------------------------------------------------------------------------
+       TAB SWITCHING HELPER FOR ALL DASHBOARDS
+       ------------------------------------------------------------------------ */
+    function setupTabs(navContainerId, panelClass) {
+      const container = document.getElementById(navContainerId);
+      container.querySelectorAll(".nav-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          container.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          document.querySelectorAll(`.${panelClass}`).forEach(p => p.classList.add("hidden"));
+          document.getElementById(btn.dataset.tab).classList.remove("hidden");
+        });
+      });
+    }
+
+    setupTabs("hodNavTabs", "hod-tab-panel");
+    setupTabs("profNavTabs", "prof-tab-panel");
+    setupTabs("studentNavTabs", "stu-tab-panel");
+
+    /* ------------------------------------------------------------------------
+       CALCULATION HELPERS (PASSING = 12 / 30)
+       ------------------------------------------------------------------------ */
+    function getEffectiveScore(markRecord) {
+      if (markRecord.remid !== null && markRecord.remid !== undefined && markRecord.remid !== "") {
+        return Math.max(Number(markRecord.mid), Number(markRecord.remid));
+      }
+      return Number(markRecord.mid);
+    }
+
+    function getStudentAverages(enrollment) {
+      const records = appState.marks.filter(m => m.enrollment === enrollment);
+      if (records.length === 0) return { midPct: "N/A", finalPct: "N/A", passed: true };
+
+      const midSum = records.reduce((acc, r) => acc + Number(r.mid), 0);
+      const finalSum = records.reduce((acc, r) => acc + getEffectiveScore(r), 0);
+      const maxTotal = records.length * 30;
+
+      const midPct = ((midSum / maxTotal) * 100).toFixed(1) + "%";
+      const finalPct = ((finalSum / maxTotal) * 100).toFixed(1) + "%";
+      const passed = records.every(r => getEffectiveScore(r) >= 12);
+
+      return { midPct, finalPct, passed };
+    }
+
+    /* ========================================================================
+       HOD DASHBOARD RENDERING & ACTIONS
+       ======================================================================== */
+    function renderHodDashboard() {
+      const pendingReqs = appState.requests.filter(r => r.status === "Pending").length;
+      document.getElementById("hodStatsGrid").innerHTML = `
+        <div class="stat-card">
+          <div class="stat-info"><span>Total Professors</span><strong>${appState.professors.length}</strong></div>
+          <div class="stat-icon" style="background: var(--prof-soft); color: var(--prof-color);">👨‍🏫</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info"><span>Enrolled Students</span><strong>${appState.students.length}</strong></div>
+          <div class="stat-icon" style="background: var(--student-soft); color: var(--student-color);">🎓</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info"><span>Active Notices</span><strong>${appState.instructions.length}</strong></div>
+          <div class="stat-icon" style="background: var(--hod-soft); color: var(--hod-color);">📢</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info"><span>Pending Requests</span><strong>${pendingReqs}</strong></div>
+          <div class="stat-icon" style="background: var(--warning-soft); color: var(--warning);">📩</div>
+        </div>
+      `;
+
+      // Render Instructions
+      const instList = document.getElementById("hodInstructionsList");
+      instList.innerHTML = appState.instructions.length
+        ? appState.instructions.map(inst => `
+          <div class="notice-item">
+            <div class="notice-meta">
+              <span class="badge badge-hod">${escapeHtml(inst.audience)}</span>
+              <span>${escapeHtml(inst.date)}</span>
+            </div>
+            <h4 style="font-weight: 700; margin-bottom: 0.3rem;">${escapeHtml(inst.title)}</h4>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.6rem;">${escapeHtml(inst.body)}</p>
+            <button type="button" class="btn btn-danger btn-sm" onclick="deleteInstruction('${inst.id}')">Delete Notice</button>
+          </div>
+        `).join("")
+        : `<p style="color: var(--text-muted);">No instructions broadcast yet.</p>`;
+
+      // Render Professors Table
+      const profTbody = document.getElementById("hodProfTableBody");
+      profTbody.innerHTML = appState.professors.map(p => `
+        <tr>
+          <td><strong>${escapeHtml(p.name)}</strong></td>
+          <td>${escapeHtml(p.email)}</td>
+          <td><span class="badge badge-prof">${escapeHtml(p.subject)}</span></td>
+          <td>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeProfessor('${p.id}')">Remove</button>
+          </td>
+        </tr>
+      `).join("");
+
+      // Render Students Overview Table
+      const stuTbody = document.getElementById("hodStudentTableBody");
+      stuTbody.innerHTML = appState.students.map(s => {
+        const stats = getStudentAverages(s.enrollment);
+        return `
+          <tr>
+            <td><strong>${escapeHtml(s.enrollment)}</strong></td>
+            <td>${escapeHtml(s.name)}</td>
+            <td>${escapeHtml(s.semester)}</td>
+            <td>${stats.midPct}</td>
+            <td><strong>${stats.finalPct}</strong></td>
+            <td>
+              <span class="badge ${stats.passed ? "badge-success" : "badge-danger"}">
+                ${stats.passed ? "Clear / Pass" : "Re-Mid Required"}
+              </span>
+            </td>
+            <td>
+              <button type="button" class="btn btn-danger btn-sm" onclick="removeStudent('${s.enrollment}', 'hod')">Remove</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      // Render Student Requests & Feedback for HOD
+      renderTicketsList("hodRequestsList", true);
+      renderFeedbackList("hodFeedbackList");
+    }
+
+    document.getElementById("hodInstructionForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = document.getElementById("instTitle").value.trim();
+      const audience = document.getElementById("instAudience").value;
+      const body = document.getElementById("instBody").value.trim();
+
+      appState.instructions.unshift({
+        id: "INST-" + Date.now(),
+        title,
+        audience,
+        body,
+        date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+      });
+      saveState();
+      e.target.reset();
+      renderHodDashboard();
+      showToast("Official instruction published!", "success");
+    });
+
+    window.deleteInstruction = function (id) {
+      appState.instructions = appState.instructions.filter(i => i.id !== id);
+      saveState();
+      renderHodDashboard();
+      showToast("Instruction removed.", "info");
+    };
+
+    document.getElementById("addProfForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("profName").value.trim();
+      const email = document.getElementById("profEmail").value.trim();
+      const subject = document.getElementById("profSubject").value.trim();
+      const password = document.getElementById("profPassword").value.trim();
+
+      if (appState.professors.some(p => p.email.toLowerCase() === email.toLowerCase())) {
+        showToast("A professor with this email already exists.", "error");
+        return;
+      }
+
+      appState.professors.push({
+        id: "PROF-" + Date.now(),
+        name,
+        email,
+        subject,
+        password
+      });
+      saveState();
+      e.target.reset();
+      renderHodDashboard();
+      showToast(`Added ${name} to faculty.`, "success");
+    });
+
+    window.removeProfessor = function (id) {
+      openModal({
+        title: "Remove Professor Account?",
+        description: "This professor will immediately lose access to the portal.",
+        confirmText: "Remove Professor",
+        isDanger: true,
+        onConfirm: () => {
+          appState.professors = appState.professors.filter(p => p.id !== id);
+          saveState();
+          renderHodDashboard();
+          showToast("Professor account removed.", "info");
+        }
+      });
+    };
+
+    /* ========================================================================
+       PROFESSOR DASHBOARD RENDERING & ACTIONS
+       ======================================================================== */
+    function renderProfessorDashboard() {
+      const pendingReqs = appState.requests.filter(r => r.status === "Pending").length;
+      document.getElementById("profStatsGrid").innerHTML = `
+        <div class="stat-card">
+          <div class="stat-info"><span>Assigned Subject</span><strong style="font-size: 1.15rem;">${escapeHtml(currentSession.user.subject)}</strong></div>
+          <div class="stat-icon" style="background: var(--prof-soft); color: var(--prof-color);">📘</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info"><span>Total Students</span><strong>${appState.students.length}</strong></div>
+          <div class="stat-icon" style="background: var(--student-soft); color: var(--student-color);">🎓</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info"><span>Exam Records</span><strong>${appState.marks.length}</strong></div>
+          <div class="stat-icon" style="background: var(--accent-soft); color: var(--accent-primary);">📊</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info"><span>Student Help Tickets</span><strong>${pendingReqs} Pending</strong></div>
+          <div class="stat-icon" style="background: var(--warning-soft); color: var(--warning);">🛟</div>
+        </div>
+      `;
+
+      // Populate Student Dropdowns
+      const studentSelect = document.getElementById("markStudentSelect");
+      const filterSelect = document.getElementById("profFilterStudent");
+      const currentFilter = filterSelect.value || "ALL";
+
+      studentSelect.innerHTML = appState.students.map(s =>
+        `<option value="${escapeHtml(s.enrollment)}">${escapeHtml(s.enrollment)} — ${escapeHtml(s.name)}</option>`
+      ).join("");
+
+      filterSelect.innerHTML = `<option value="ALL">All Students</option>` + appState.students.map(s =>
+        `<option value="${escapeHtml(s.enrollment)}">${escapeHtml(s.enrollment)} — ${escapeHtml(s.name)}</option>`
+      ).join("");
+      filterSelect.value = currentFilter;
+
+      // Render Marks Table
+      renderProfMarksTable();
+
+      // Render Members Table
+      const membersBody = document.getElementById("profStudentsTableBody");
+      membersBody.innerHTML = appState.students.map(s => `
+        <tr>
+          <td><strong>${escapeHtml(s.enrollment)}</strong></td>
+          <td>${escapeHtml(s.name)}</td>
+          <td>${escapeHtml(s.semester)}</td>
+          <td>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeStudent('${s.enrollment}', 'prof')">Remove</button>
+          </td>
+        </tr>
+      `).join("");
+
+      // Render Student Helpdesk & HOD Instructions
+      renderTicketsList("profRequestsList", true);
+      renderFeedbackList("profFeedbackList");
+
+      const notices = appState.instructions.filter(i => i.audience !== "Students Only");
+      document.getElementById("profInstructionsList").innerHTML = notices.length
+        ? notices.map(n => `
+          <div class="notice-item">
+            <div class="notice-meta">
+              <span class="badge badge-hod">${escapeHtml(n.audience)}</span>
+              <span>${escapeHtml(n.date)}</span>
+            </div>
+            <h4 style="font-weight: 700; margin-bottom: 0.3rem;">${escapeHtml(n.title)}</h4>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">${escapeHtml(n.body)}</p>
+          </div>
+        `).join("")
+        : `<p style="color: var(--text-muted);">No instructions from HOD.</p>`;
+    }
+
+    function renderProfMarksTable() {
+      const filterVal = document.getElementById("profFilterStudent").value;
+      const filteredMarks = filterVal === "ALL"
+        ? appState.marks
+        : appState.marks.filter(m => m.enrollment === filterVal);
+
+      const tbody = document.getElementById("profMarksTableBody");
+      tbody.innerHTML = filteredMarks.map(m => {
+        const stu = appState.students.find(s => s.enrollment === m.enrollment);
+        const stuName = stu ? stu.name : "Unknown Student";
+        const effective = getEffectiveScore(m);
+        const passed = effective >= 12;
+
+        return `
+          <tr>
+            <td><strong>${escapeHtml(m.enrollment)}</strong></td>
+            <td>${escapeHtml(stuName)}</td>
+            <td>${escapeHtml(m.subject)}</td>
+            <td>${m.mid} / 30</td>
+            <td>${m.remid !== null && m.remid !== "" ? `${m.remid} / 30` : `<span style="color: var(--text-muted);">—</span>`}</td>
+            <td><strong>${effective} / 30</strong></td>
+            <td>
+              <span class="badge ${passed ? "badge-success" : "badge-danger"}">
+                ${passed ? "PASS" : "FAIL (<12)"}
+              </span>
+            </td>
+            <td>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="loadMarkIntoForm('${m.enrollment}', '${escapeHtml(m.subject)}', ${m.mid}, '${m.remid ?? ""}')">
+                Edit
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    document.getElementById("profFilterStudent").addEventListener("change", renderProfMarksTable);
+
+    window.loadMarkIntoForm = function (enrollment, subject, mid, remid) {
+      document.getElementById("markStudentSelect").value = enrollment;
+      document.getElementById("markSubjectSelect").value = subject;
+      document.getElementById("midScoreInput").value = mid;
+      document.getElementById("remidScoreInput").value = remid;
+      document.getElementById("midScoreInput").focus();
+      showToast("Loaded record into editor above.", "info");
+    };
+
+    document.getElementById("profMarkForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const enrollment = document.getElementById("markStudentSelect").value;
+      const subject = document.getElementById("markSubjectSelect").value;
+      const mid = Number(document.getElementById("midScoreInput").value);
+      const remidRaw = document.getElementById("remidScoreInput").value.trim();
+      const remid = remidRaw === "" ? null : Number(remidRaw);
+
+      const existingIdx = appState.marks.findIndex(
+        m => m.enrollment === enrollment && m.subject === subject
+      );
+
+      if (existingIdx > -1) {
+        appState.marks[existingIdx].mid = mid;
+        appState.marks[existingIdx].remid = remid;
+        showToast("Student marks updated successfully!", "success");
+      } else {
+        appState.marks.push({
+          id: "M-" + Date.now(),
+          enrollment,
+          subject,
+          mid,
+          remid
+        });
+        showToast("New subject marks added!", "success");
+      }
+
+      saveState();
+      renderProfessorDashboard();
+    });
+
+    document.getElementById("profAddStudentForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const enrollment = document.getElementById("newStuEnroll").value.trim();
+      const name = document.getElementById("newStuName").value.trim();
+      const semester = document.getElementById("newStuSem").value;
+      const password = document.getElementById("newStuPass").value.trim();
+
+      if (appState.students.some(s => s.enrollment.toLowerCase() === enrollment.toLowerCase())) {
+        showToast("Enrollment number already exists!", "error");
+        return;
+      }
+
+      appState.students.push({
+        enrollment,
+        name,
+        semester,
+        password,
+        avatar: ""
+      });
+      saveState();
+      e.target.reset();
+      renderProfessorDashboard();
+      showToast(`Student ${name} (${enrollment}) enrolled!`, "success");
+    });
+
+    window.removeStudent = function (enrollment, sourceRole) {
+      openModal({
+        title: "Remove Student Member?",
+        description: `Remove student ${enrollment} and all associated marks from the portal?`,
+        confirmText: "Remove Student",
+        isDanger: true,
+        onConfirm: () => {
+          appState.students = appState.students.filter(s => s.enrollment !== enrollment);
+          appState.marks = appState.marks.filter(m => m.enrollment !== enrollment);
+          saveState();
+          if (sourceRole === "hod") renderHodDashboard();
+          else renderProfessorDashboard();
+          showToast("Student member removed.", "info");
+        }
+      });
+    };
+
+    /* Shared Helpdesk & Feedback Renderers for Professor & HOD */
+    function renderTicketsList(containerId, canReply) {
+      const container = document.getElementById(containerId);
+      if (!appState.requests.length) {
+        container.innerHTML = `<p style="color: var(--text-muted);">No student requests submitted.</p>`;
+        return;
+      }
+
+      container.innerHTML = appState.requests.map(req => `
+        <div class="notice-item" style="border-left-color: ${req.status === "Resolved" ? "var(--success)" : "var(--warning)"};">
+          <div class="notice-meta">
+            <span><strong>${escapeHtml(req.studentName)}</strong> (${escapeHtml(req.enrollment)})</span>
+            <span class="badge ${req.status === "Resolved" ? "badge-success" : "badge-warning"}">${escapeHtml(req.status)}</span>
+          </div>
+          <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.25rem;">
+            ${escapeHtml(req.type)} — <span style="color: var(--accent-primary);">${escapeHtml(req.subject)}</span>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.5rem;">${escapeHtml(req.message)}</p>
+          ${req.reply ? `<div style="background: var(--bg-card); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.84rem; margin-bottom: 0.5rem;"><strong>Faculty Reply:</strong> ${escapeHtml(req.reply)}</div>` : ""}
+          ${canReply ? `
+            <button type="button" class="btn btn-success btn-sm" onclick="replyToStudentRequest('${req.id}')">
+              ${req.status === "Resolved" ? "Update Reply" : "Reply & Resolve"}
+            </button>
+          ` : ""}
+        </div>
+      `).join("");
+    }
+
+    window.replyToStudentRequest = function (reqId) {
+      const req = appState.requests.find(r => r.id === reqId);
+      if (!req) return;
+
+      openModal({
+        title: `Respond to ${req.studentName}`,
+        description: `Request: "${req.message}"`,
+        showInput: true,
+        inputLabel: "Official Response / Resolution Note",
+        initialValue: req.reply || "Your request has been reviewed and approved.",
+        confirmText: "Resolve Request",
+        onConfirm: (replyText) => {
+          req.reply = replyText || "Resolved by faculty.";
+          req.status = "Resolved";
+          saveState();
+          if (currentSession.role === "hod") renderHodDashboard();
+          else renderProfessorDashboard();
+          showToast("Student request marked as Resolved.", "success");
+        }
+      });
+    };
+
+    function renderFeedbackList(containerId) {
+      const container = document.getElementById(containerId);
+      if (!appState.feedbacks.length) {
+        container.innerHTML = `<p style="color: var(--text-muted);">No feedback received yet.</p>`;
+        return;
+      }
+
+      container.innerHTML = appState.feedbacks.map(fb => `
+        <div class="notice-item" style="border-left-color: var(--prof-color);">
+          <div class="notice-meta">
+            <span><strong>${escapeHtml(fb.studentName)}</strong> (${escapeHtml(fb.enrollment)})</span>
+            <span class="badge badge-prof">${escapeHtml(fb.rating)}</span>
+          </div>
+          <div style="font-size: 0.84rem; font-weight: 700; margin-bottom: 0.25rem;">Subject: ${escapeHtml(fb.subject)}</div>
+          <p style="font-size: 0.88rem; color: var(--text-secondary);">${escapeHtml(fb.comment)}</p>
+        </div>
+      `).join("");
+    }
+
+    /* ========================================================================
+       STUDENT DASHBOARD RENDERING & ACTIONS (STRICTLY ISOLATED)
+       ======================================================================== */
+    function renderStudentDashboard() {
+      // Refresh student object from state
+      const stu = appState.students.find(s => s.enrollment === currentSession.user.enrollment);
+      if (!stu) return;
+      currentSession.user = stu;
+
+      document.getElementById("studentProfileName").textContent = stu.name;
+      document.getElementById("studentProfileSem").textContent = stu.semester;
+      document.getElementById("studentProfileEnroll").textContent = stu.enrollment;
+
+      // Render Profile Avatar
+      const avatarBox = document.getElementById("studentAvatarContainer");
+      const removePicBtn = document.getElementById("removePicBtn");
+      if (stu.avatar) {
+        avatarBox.innerHTML = `<img src="${stu.avatar}" alt="Student Avatar" />`;
+        removePicBtn.classList.remove("hidden");
+      } else {
+        const initials = stu.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+        avatarBox.innerHTML = `<span>${escapeHtml(initials)}</span>`;
+        removePicBtn.classList.add("hidden");
+      }
+
+      // Render Overall Percentage Summary
+      const avg = getStudentAverages(stu.enrollment);
+      document.getElementById("studentSummaryBox").innerHTML = `
+        <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Overall Aggregate</div>
+        <div style="font-size: 1.65rem; font-weight: 800; color: var(--student-color);">${avg.finalPct}</div>
+        <span class="badge ${avg.passed ? "badge-success" : "badge-warning"}">
+          ${avg.passed ? "All Subjects Clear" : "Re-Mid Applicable"}
+        </span>
+      `;
+
+      // Render Read-Only Marks Table
+      const myMarks = appState.marks.filter(m => m.enrollment === stu.enrollment);
+      const marksBody = document.getElementById("studentMarksTableBody");
+      marksBody.innerHTML = myMarks.length
+        ? myMarks.map(m => {
+          const effective = getEffectiveScore(m);
+          const passed = effective >= 12;
+          return `
+            <tr>
+              <td><strong>${escapeHtml(m.subject)}</strong></td>
+              <td>${m.mid} / 30</td>
+              <td>${m.remid !== null && m.remid !== "" ? `${m.remid} / 30` : `<span style="color: var(--text-muted);">Not Attempted</span>`}</td>
+              <td><strong>${effective} / 30</strong></td>
+              <td>
+                <span class="badge ${passed ? "badge-success" : "badge-danger"}">
+                  ${passed ? "PASS" : "RE-MID REQUIRED"}
+                </span>
+              </td>
+            </tr>
+          `;
+        }).join("")
+        : `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No examination marks published yet.</td></tr>`;
+
+      // Render Student's Own Requests
+      const myReqs = appState.requests.filter(r => r.enrollment === stu.enrollment);
+      document.getElementById("studentRequestsList").innerHTML = myReqs.length
+        ? myReqs.map(r => `
+          <div class="notice-item" style="border-left-color: ${r.status === "Resolved" ? "var(--success)" : "var(--warning)"};">
+            <div class="notice-meta">
+              <span>${escapeHtml(r.type)} (${escapeHtml(r.subject)})</span>
+              <span class="badge ${r.status === "Resolved" ? "badge-success" : "badge-warning"}">${escapeHtml(r.status)}</span>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.4rem;">${escapeHtml(r.message)}</p>
+            ${r.reply ? `<div style="background: var(--bg-card); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.84rem;"><strong>Response:</strong> ${escapeHtml(r.reply)}</div>` : ""}
+          </div>
+        `).join("")
+        : `<p style="color: var(--text-muted);">You haven't submitted any requests yet.</p>`;
+
+      // Render Student's Own Feedback
+      const myFb = appState.feedbacks.filter(f => f.enrollment === stu.enrollment);
+      document.getElementById("studentFeedbackList").innerHTML = myFb.length
+        ? myFb.map(f => `
+          <div class="notice-item" style="border-left-color: var(--student-color);">
+            <div class="notice-meta">
+              <span>${escapeHtml(f.subject)}</span>
+              <span class="badge badge-student">${escapeHtml(f.rating)}</span>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-secondary);">${escapeHtml(f.comment)}</p>
+          </div>
+        `).join("")
+        : `<p style="color: var(--text-muted);">No feedback submitted yet.</p>`;
+
+      // Render Public / Student Notices (Strictly excluding Professors Only notices)
+      const stuNotices = appState.instructions.filter(i => i.audience !== "Professors Only");
+      document.getElementById("studentNoticesList").innerHTML = stuNotices.length
+        ? stuNotices.map(n => `
+          <div class="notice-item">
+            <div class="notice-meta">
+              <span class="badge badge-hod">Department Notice</span>
+              <span>${escapeHtml(n.date)}</span>
+            </div>
+            <h4 style="font-weight: 700; margin-bottom: 0.3rem;">${escapeHtml(n.title)}</h4>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">${escapeHtml(n.body)}</p>
+          </div>
+        `).join("")
+        : `<p style="color: var(--text-muted);">No department notices available.</p>`;
+    }
+
+    // Profile Picture Upload (Base64 stored in localStorage)
+    document.getElementById("profilePicUpload").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 1.5 * 1024 * 1024) {
+        showToast("Please select an image smaller than 1.5 MB.", "warning");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const stu = appState.students.find(s => s.enrollment === currentSession.user.enrollment);
+        if (stu) {
+          stu.avatar = event.target.result;
+          saveState();
+          renderStudentDashboard();
+          showToast("Profile picture updated!", "success");
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById("removePicBtn").addEventListener("click", () => {
+      const stu = appState.students.find(s => s.enrollment === currentSession.user.enrollment);
+      if (stu) {
+        stu.avatar = "";
+        saveState();
+        renderStudentDashboard();
+        showToast("Profile picture removed.", "info");
+      }
+    });
+
+    // Student Make a Request Form
+    document.getElementById("studentRequestForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const stu = currentSession.user;
+      appState.requests.unshift({
+        id: "REQ-" + Date.now(),
+        enrollment: stu.enrollment,
+        studentName: stu.name,
+        type: document.getElementById("stuReqType").value,
+        subject: document.getElementById("stuReqSubject").value,
+        message: document.getElementById("stuReqMessage").value.trim(),
+        status: "Pending",
+        reply: "",
+        date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+      });
+      saveState();
+      e.target.reset();
+      renderStudentDashboard();
+      showToast("Your request has been submitted to faculty!", "success");
+    });
+
+    // Student Give Feedback Form
+    document.getElementById("studentFeedbackForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const stu = currentSession.user;
+      appState.feedbacks.unshift({
+        id: "FB-" + Date.now(),
+        enrollment: stu.enrollment,
+        studentName: stu.name,
+        subject: document.getElementById("stuFbSubject").value,
+        rating: document.getElementById("stuFbRating").value,
+        comment: document.getElementById("stuFbComment").value.trim(),
+        date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+      });
+      saveState();
+      e.target.reset();
+      renderStudentDashboard();
+      showToast("Thank you! Your feedback has been recorded.", "success");
+    });
+
+    /* ------------------------------------------------------------------------
+       SECURITY HELPER (XSS SANITIZATION)
+       ------------------------------------------------------------------------ */
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Boot Application
+    initTheme();
+  </script>
+</body>
+</html>
